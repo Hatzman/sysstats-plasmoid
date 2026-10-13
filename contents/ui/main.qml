@@ -163,6 +163,11 @@ PlasmoidItem {
                         spacing: Kirigami.Units.largeSpacing
                         Kirigami.Icon { source: g.icon; implicitWidth: Kirigami.Units.iconSizes.smallMedium; implicitHeight: implicitWidth }
                         Kirigami.Heading { text: g.title; level: 4; Layout.fillWidth: true }
+                    }
+
+                    // Werte in eigener Zeile: neben dem Titel überlappten sie im schmalen Popup
+                    RowLayout {
+                        spacing: Kirigami.Units.largeSpacing * 2
                         Repeater {
                             model: g.vals.length
                             RowLayout {
