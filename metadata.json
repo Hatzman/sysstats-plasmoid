@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Id": "org.hatzman.sysstats",
+        "Name": "System Stats",
+        "Description": "CPU, GPU, Arbeitsspeicher und Netzwerk mit 10-Minuten-Verlauf",
+        "Icon": "utilities-system-monitor",
+        "Version": "1.0",
+        "License": "MIT"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
