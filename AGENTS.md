@@ -64,7 +64,9 @@ confirm they render) via
     fixed from `widest` (`FontMetrics.advanceWidth`) so the panel doesn't jump, the slack sits at
     the group's end. `Formatter.maximumLength` was too generous (gap between label and value).
     Tooltip has one line per group.
-  - Full: header, one card per group (values with colour dots of their series, `LineChart` with
+  - Full: header, one section per group, separated by `Kirigami.Separator` — no card fill, so popup
+    and desktop keep one uniform background (title, values with colour dots of their series in
+    their own row, `LineChart` with
     one `ArraySource` per series via `Instantiator`, right-anchored with width ∝ sample count for
     a fixed time axis, extra line). Plasma builds it lazily in the popup — QML errors in it only
     appear in the journal after the popup was opened once (the desktop instance builds it at start).

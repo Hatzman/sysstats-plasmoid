@@ -146,17 +146,16 @@ PlasmoidItem {
 
         Repeater {
             model: root.groups.length
-            Rectangle {
+            ColumnLayout {
                 readonly property var g: root.groups[index]
                 Layout.fillWidth: true
-                implicitHeight: card.implicitHeight + Kirigami.Units.largeSpacing * 2
-                radius: Kirigami.Units.cornerRadius
-                color: Kirigami.Theme.alternateBackgroundColor
+                spacing: Kirigami.Units.largeSpacing
+
+                // Trennlinie statt Kartenfläche: ein einheitlicher Hintergrund in Popup und Desktop
+                Kirigami.Separator { visible: index > 0; Layout.fillWidth: true }
 
                 ColumnLayout {
-                    id: card
-                    anchors.fill: parent
-                    anchors.margins: Kirigami.Units.largeSpacing
+                    Layout.fillWidth: true
                     spacing: Kirigami.Units.smallSpacing
 
                     RowLayout {
