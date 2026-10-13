@@ -17,4 +17,4 @@ Die Werte kommen aus denselben Sensoren wie Plasmas Systemmonitor (`ksystemstats
 kpackagetool6 -t Plasma/Applet -i .   # Update: -u statt -i
 ```
 
-Danach „System Stats“ über *Miniprogramme hinzufügen* in Leiste oder Desktop ziehen. Nach Updates ggf. `systemctl --user restart plasma-plasmashell`.
+Danach „System Stats“ über *Miniprogramme hinzufügen* in Leiste oder Desktop ziehen. Auf dem Desktop lässt sich der Hintergrund im Bearbeitungsmodus ausblenden. Nach Updates ggf. `systemctl --user restart plasma-plasmashell`.

@@ -59,7 +59,8 @@ confirm they render) via
 - **Colours:** only the CPU temperature is coloured (`tempColor`: neutral ≥ `tempWarn` 75 °C,
   negative ≥ `tempCrit` 85 °C). High load is deliberately not coloured.
 - **Representations:** desktop (`Planar`) shows `fullRepresentation` directly, the panel shows
-  `compactRepresentation`.
+  `compactRepresentation`. `backgroundHints` includes `ConfigurableBackground`: on the desktop the
+  background can be toggled in edit mode (Plasma stores it per widget).
   - Compact: per group a dimmed label and two left-aligned values right behind it; column width
     fixed from `widest` (`FontMetrics.advanceWidth`) so the panel doesn't jump, the slack sits at
     the group's end. `Formatter.maximumLength` was too generous (gap between label and value).

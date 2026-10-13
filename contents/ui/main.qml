@@ -93,6 +93,8 @@ PlasmoidItem {
     ]
 
     preferredRepresentation: Plasmoid.formFactor === PlasmaCore.Types.Planar ? fullRepresentation : compactRepresentation
+    // Desktop: „Hintergrund anzeigen“ im Bearbeitungsmodus umschaltbar, je nach Hintergrundbild
+    Plasmoid.backgroundHints: PlasmaCore.Types.DefaultBackground | PlasmaCore.Types.ConfigurableBackground
 
     toolTipMainText: "Systemauslastung"
     toolTipSubText: groups.map(g => g.title + ": " + g.vals.map((v, i) => g.pre[i] + v.text).join(" · ")).join("\n")
