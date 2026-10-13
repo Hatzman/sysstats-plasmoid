@@ -141,7 +141,9 @@ PlasmoidItem {
         Layout.minimumHeight: implicitHeight
         spacing: Kirigami.Units.mediumSpacing
 
+        // Kopfzeile nur im Popup; auf dem Desktop überflüssig
         RowLayout {
+            visible: Plasmoid.formFactor !== PlasmaCore.Types.Planar
             Kirigami.Icon { source: "utilities-system-monitor"; implicitWidth: Kirigami.Units.iconSizes.large; implicitHeight: implicitWidth }
             Kirigami.Heading { text: "Systemauslastung"; level: 3; Layout.fillWidth: true }
         }
