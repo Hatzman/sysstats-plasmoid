@@ -51,7 +51,8 @@ confirm they render) via
   down, up`, last `maxSamples` = 300 = 10 min, RAM only). Lives on the root, so it keeps
   recording while the popup is closed. Always replaced (copy + reassign), never mutated in place.
 - **`groups`:** one object per group (CPU, GPU, RAM, NET) with `name` (panel label), `title`,
-  `icon`, `pre` (panel prefix like „↓ “), `units` (for fixed widths), `vals` (two values, optional
+  `icon`, `pre` (panel prefix like „↓ “), `widest` (realistic longest panel text per value, sets
+  the fixed column width), `vals` (two values, optional
   `color`), `series` (`data` + `color` per chart line), `max` (y-axis), `extra` (small text line).
   Both representations are driven by it — add a value there, not in the views. Repeaters use
   `model: groups.length` + `groups[index]` so delegates survive the 2-s updates.
@@ -59,9 +60,10 @@ confirm they render) via
   negative ≥ `tempCrit` 85 °C). High load is deliberately not coloured.
 - **Representations:** desktop (`Planar`) shows `fullRepresentation` directly, the panel shows
   `compactRepresentation`.
-  - Compact: per group a dimmed label and two right-aligned values; widths fixed via
-    `Formatter.maximumLength(unit, font)` + prefix width so the panel doesn't jump. Tooltip has
-    one line per group.
+  - Compact: per group a dimmed label and two left-aligned values right behind it; column width
+    fixed from `widest` (`FontMetrics.advanceWidth`) so the panel doesn't jump, the slack sits at
+    the group's end. `Formatter.maximumLength` was too generous (gap between label and value).
+    Tooltip has one line per group.
   - Full: header, one card per group (values with colour dots of their series, `LineChart` with
     one `ArraySource` per series via `Instantiator`, right-anchored with width ∝ sample count for
     a fixed time axis, extra line). Plasma builds it lazily in the popup — QML errors in it only

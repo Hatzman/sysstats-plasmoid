@@ -59,30 +59,31 @@ PlasmoidItem {
     }
 
     // Eine Gruppe je Spalte (Leiste) bzw. Karte (große Ansicht).
+    // widest: realistisch längster Leistentext je Wert, ergibt die feste Spaltenbreite.
     // vals: zwei Werte; die ersten series.length Werte bekommen einen Farbpunkt ihrer Reihe.
     readonly property real netMax: Math.max(...hist.down, ...hist.up, 1)
     readonly property var groups: [
-        { name: "CPU", title: "Prozessor", icon: "cpu", pre: ["", ""], units: [cpu.unit, cpuTemp.unit],
+        { name: "CPU", title: "Prozessor", icon: "cpu", pre: ["", ""], widest: ["100 %", "100 °C"],
           vals: [{ label: "Auslastung", text: fmt(cpu) },
                  { label: "Temperatur", text: fmt(cpuTemp), color: tempColor(cpuTemp.value) }],
           series: [{ data: hist.cpu, color: Kirigami.Theme.highlightColor },
                    { data: hist.temp, color: Kirigami.Theme.neutralTextColor }],
           max: 100,
           extra: cores.value + " Kerne · " + threads.value + " Threads" },
-        { name: "GPU", title: "Grafikkarte", icon: "video-display", pre: ["", ""], units: [gpu.unit, vram.unit],
+        { name: "GPU", title: "Grafikkarte", icon: "video-display", pre: ["", ""], widest: ["100 %", "99,9 GiB"],
           vals: [{ label: "Auslastung", text: fmt(gpu) },
                  { label: "VRAM", text: fmt(vram) }],
           series: [{ data: hist.gpu, color: Kirigami.Theme.highlightColor },
                    { data: hist.vram, color: Kirigami.Theme.visitedLinkColor }],
           max: 100,
           extra: "Lüfter " + fmt(gpuFan) + " · Leistung " + fmt(gpuPower) + " · VRAM gesamt " + fmt(vramTotal) },
-        { name: "RAM", title: "Arbeitsspeicher", icon: "media-flash", pre: ["", ""], units: [ram.unit, ramPct.unit],
+        { name: "RAM", title: "Arbeitsspeicher", icon: "media-flash", pre: ["", ""], widest: ["99,9 GiB", "100 %"],
           vals: [{ label: "Belegt", text: fmt(ram) },
                  { label: "", text: fmt(ramPct) }],
           series: [{ data: hist.ram, color: Kirigami.Theme.highlightColor }],
           max: 100,
           extra: "Gesamt " + fmt(ramTotal) },
-        { name: "NET", title: "Netzwerk", icon: "network-wired", pre: ["↓ ", "↑ "], units: [down.unit, up.unit],
+        { name: "NET", title: "Netzwerk", icon: "network-wired", pre: ["↓ ", "↑ "], widest: ["↓ 999,9 MiB/s", "↑ 999,9 MiB/s"],
           vals: [{ label: "Download", text: fmt(down) },
                  { label: "Upload", text: fmt(up) }],
           series: [{ data: hist.down, color: Kirigami.Theme.positiveTextColor },
@@ -103,11 +104,12 @@ PlasmoidItem {
 
         FontMetrics { id: fm }
 
-        // Je Gruppe: Kennung | zwei Werte untereinander, feste Breite gegen Springen
+        // Je Gruppe: Kennung | zwei Werte untereinander, linksbündig mit fester Breite gegen Springen;
+        // der Leerraum steht so am Gruppenende und trennt die Gruppen
         RowLayout {
             id: row
             anchors.centerIn: parent
-            spacing: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.gridUnit
             Repeater {
                 model: root.groups.length
                 RowLayout {
@@ -123,9 +125,7 @@ PlasmoidItem {
                                 text: g.pre[index] + v.text
                                 color: v.color || Kirigami.Theme.textColor
                                 font.features: { "tnum": 1 }
-                                horizontalAlignment: Text.AlignRight
-                                Layout.preferredWidth: Math.max(...[0, 1].map(i =>
-                                    fm.advanceWidth(g.pre[i]) + Fmt.Formatter.maximumLength(g.units[i], font)))
+                                Layout.preferredWidth: Math.max(...g.widest.map(t => fm.advanceWidth(t)))
                             }
                         }
                     }
