@@ -4,9 +4,9 @@ Zeigt CPU-, GPU-, Arbeitsspeicher- und Netzwerkauslastung – kompakt in der Kon
 
 | Gruppe | Leiste | Detailansicht zusätzlich |
 |---|---|---|
-| CPU | Auslastung, Temperatur (gelb ab 75 °C, rot ab 85 °C) | Kerne, Threads |
+| CPU | Auslastung, Temperatur (gelb ab 75 °C, rot ab 85 °C) | Auslastung je Thread als Balken, Kerne, Threads |
 | GPU | Auslastung, VRAM | Lüfter, Leistung, VRAM gesamt |
-| RAM | belegt, belegt % | Gesamt |
+| RAM | belegt, belegt % | Gesamt, Swap |
 | Netz | Download, Upload | Maximum der letzten 10 Minuten |
 
 Die Werte kommen aus denselben Sensoren wie Plasmas Systemmonitor (`ksystemstats`); benötigt KQuickCharts (`kquickcharts`, bei Plasma meist schon installiert).

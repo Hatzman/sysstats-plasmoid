@@ -46,14 +46,19 @@ confirm they render) via
 
 - **Sensors:** one `Sensors.Sensor` per value, `updateRateLimit: rate` (2 s). `cpu/all/*`,
   `gpu/all/*`, `memory/physical/*`, `network/all/*` so it runs on other machines unchanged;
-  only GPU fan/power are fixed to `gpu/gpu0` (`ponytail`). No settings dialog.
+  only GPU fan/power are fixed to `gpu/gpu0` (`ponytail`). Per-CPU load: an `Instantiator`
+  creates one `cpu/cpuN/usage` sensor per logical CPU (`threads.value`; ksystemstats has no
+  physical cores); `sample()` copies their values into `coreVals`, since instantiated objects
+  aren't bindable. ksystemstats lists only NetworkManager interfaces (here just `enp8s0`), hence
+  no per-interface network. No settings dialog.
 - **History:** `Timer` every 2 s → `sample()` appends to `hist` (`cpu, temp, gpu, vram, ram,
   down, up`, last `maxSamples` = 300 = 10 min, RAM only). Lives on the root, so it keeps
   recording while the popup is closed. Always replaced (copy + reassign), never mutated in place.
 - **`groups`:** one object per group (CPU, GPU, RAM, NET) with `name` (panel label), `title`,
   `icon`, `pre` (panel prefix like „↓ “), `widest` (realistic longest panel text per value, sets
   the fixed column width), `vals` (two values, optional
-  `color`), `series` (`data` + `color` per chart line), `max` (y-axis), `extra` (small text line).
+  `color`), `series` (`data` + `color` per chart line), optional `bars` (current values 0–100,
+  drawn as a bar row above the chart; CPU only), `max` (y-axis), `extra` (small text line).
   Both representations are driven by it — add a value there, not in the views. Repeaters use
   `model: groups.length` + `groups[index]` so delegates survive the 2-s updates.
 - **Colours:** only the CPU temperature is coloured (`tempColor`: neutral ≥ `tempWarn` 75 °C,
@@ -67,7 +72,7 @@ confirm they render) via
     Tooltip has one line per group.
   - Full: header (popup only, hidden on the desktop), one section per group, separated by `Kirigami.Separator` — no card fill, so popup
     and desktop keep one uniform background (title, values with colour dots of their series in
-    their own row, `LineChart` with
+    their own row, optional bar row from `bars`, `LineChart` with
     one `ArraySource` per series via `Instantiator`, right-anchored with width ∝ sample count for
     a fixed time axis, extra line). Plasma builds it lazily in the popup — QML errors in it only
     appear in the journal after the popup was opened once (the desktop instance builds it at start).

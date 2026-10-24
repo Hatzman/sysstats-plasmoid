@@ -33,14 +33,27 @@ PlasmoidItem {
     Sensors.Sensor { id: ram; sensorId: "memory/physical/used"; updateRateLimit: root.rate }
     Sensors.Sensor { id: ramPct; sensorId: "memory/physical/usedPercent"; updateRateLimit: root.rate }
     Sensors.Sensor { id: ramTotal; sensorId: "memory/physical/total" }
+    Sensors.Sensor { id: swap; sensorId: "memory/swap/used"; updateRateLimit: root.rate }
+    Sensors.Sensor { id: swapPct; sensorId: "memory/swap/usedPercent"; updateRateLimit: root.rate }
+    Sensors.Sensor { id: swapTotal; sensorId: "memory/swap/total" }
     Sensors.Sensor { id: down; sensorId: "network/all/download"; updateRateLimit: root.rate }
     Sensors.Sensor { id: up; sensorId: "network/all/upload"; updateRateLimit: root.rate }
+
+    // Ein Sensor je logischer CPU (ksystemstats kennt keine physischen Kerne einzeln)
+    Instantiator {
+        id: coreSensors
+        model: threads.value || 0
+        delegate: Sensors.Sensor { sensorId: "cpu/cpu" + index + "/usage"; updateRateLimit: root.rate }
+    }
+    // Aktuelle Werte je CPU, im Takt von sample(); Instantiator-Objekte sind selbst nicht bindbar
+    property var coreVals: []
 
     readonly property real vramPct: vramTotal.value > 0 ? vram.value / vramTotal.value * 100 : 0
 
     function num(v) { return isFinite(v) ? v : 0 }
     function push(a, v) { return a.concat([num(v)]).slice(-maxSamples) }
     function sample() {
+        coreVals = Array.from({ length: coreSensors.count }, (_, i) => num(coreSensors.objectAt(i).value))
         hist = {
             cpu: push(hist.cpu, cpu.value), temp: push(hist.temp, cpuTemp.value),
             gpu: push(hist.gpu, gpu.value), vram: push(hist.vram, vramPct),
@@ -61,6 +74,7 @@ PlasmoidItem {
     // Eine Gruppe je Spalte (Leiste) bzw. Karte (große Ansicht).
     // widest: realistisch längster Leistentext je Wert, ergibt die feste Spaltenbreite.
     // vals: zwei Werte; die ersten series.length Werte bekommen einen Farbpunkt ihrer Reihe.
+    // bars (optional): aktuelle Werte 0–100 als Balkenreihe über dem Diagramm.
     readonly property real netMax: Math.max(...hist.down, ...hist.up, 1)
     readonly property var groups: [
         { name: "CPU", title: "Prozessor", icon: "cpu", pre: ["", ""], widest: ["100 %", "100 °C"],
@@ -68,6 +82,7 @@ PlasmoidItem {
                  { label: "Temperatur", text: fmt(cpuTemp), color: tempColor(cpuTemp.value) }],
           series: [{ data: hist.cpu, color: Kirigami.Theme.highlightColor },
                    { data: hist.temp, color: Kirigami.Theme.neutralTextColor }],
+          bars: coreVals,
           max: 100,
           extra: cores.value + " Kerne · " + threads.value + " Threads" },
         { name: "GPU", title: "Grafikkarte", icon: "video-display", pre: ["", ""], widest: ["100 %", "99,9 GiB"],
@@ -82,7 +97,7 @@ PlasmoidItem {
                  { label: "", text: fmt(ramPct) }],
           series: [{ data: hist.ram, color: Kirigami.Theme.highlightColor }],
           max: 100,
-          extra: "Gesamt " + fmt(ramTotal) },
+          extra: "Gesamt " + fmt(ramTotal) + " · Swap " + fmt(swap) + " von " + fmt(swapTotal) + " (" + fmt(swapPct) + ")" },
         { name: "NET", title: "Netzwerk", icon: "network-wired", pre: ["↓ ", "↑ "], widest: ["↓ 999,9 MiB/s", "↑ 999,9 MiB/s"],
           vals: [{ label: "Download", text: fmt(down) },
                  { label: "Upload", text: fmt(up) }],
@@ -189,6 +204,29 @@ PlasmoidItem {
                                     color: v.color || Kirigami.Theme.textColor
                                     font.bold: true
                                     font.features: { "tnum": 1 }
+                                }
+                            }
+                        }
+                    }
+
+                    // Momentaufnahme je CPU, ohne Verlauf und ohne Warnfarbe
+                    RowLayout {
+                        visible: !!g.bars
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: Kirigami.Units.gridUnit
+                        spacing: Kirigami.Units.smallSpacing / 2
+                        Repeater {
+                            model: g.bars ? g.bars.length : 0
+                            Rectangle {
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                color: Qt.alpha(Kirigami.Theme.textColor, 0.1)
+                                Rectangle {
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.bottom: parent.bottom
+                                    height: parent.height * Math.min(1, g.bars[index] / 100)
+                                    color: Kirigami.Theme.highlightColor
                                 }
                             }
                         }
